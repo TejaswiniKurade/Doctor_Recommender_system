@@ -1,16 +1,15 @@
-# Personalized-Medical-Recommendation-System-with-Machine-Learning
-Welcome to our cutting-edge Personalized Medical Recommendation System, a powerful platform designed to assist users in understanding and managing their health. Leveraging the capabilities of machine learning, our system analyzes user-input symptoms to predict potential diseases accurately. Here's what sets our system apart:
+Problem Statement: Develop a healthcare recommendation system that leverages user-input symptoms to identify potential diseases and recommends relevant healthcare providers based on specialty and availability. 
 
-User-Friendly Interface: Our intuitive interface allows users to input their symptoms effortlessly, creating a seamless user experience.
+Solution: Our solution addresses the problem statement by allowing users to input their symptoms, generating potential disease matches, and providing detailed information about each disease, including recommended diet, precautions, and workouts. Additionally, the system recommends healthcare providers specialized in treating the identified diseases, considering factors such as specialty, distance, availability,experience and user ratings.
 
-Advanced Machine Learning Models: We've integrated state-of-the-art machine learning models that accurately predict diseases based on input symptoms, ensuring reliable and precise results.
+Approach - 
+I have used different ai algorithms to train data of symptoms and align them with its diseases and its respective medications,diet and workout.I have used streamlite to run the app in the browser.For the doctor recommendation i have generated a dataset which include Doctor name,distance ,hospital ,fees ,rating and availability from various sources.I have given user preferences on basis of which best doctor will be recommended.It uses simple algorithm and takes few features to decide what will be the best.From disease the specialization is aligned and from specialization and user preference doctor is recommended.
+I wanted to further add the real time geographical data to know exact distance and a strong dataset 
+to give accuracy .I also wanted to provide a interface where user can book appointments directly so that they don’t have to visit hospital.I further wanted to use k-mean clustering to find similar hospitals and doctor with almost same preferences so that user can compare.
+Regarding security aspect ,store only the minimum necessary information required for the functioning of the system, minimizing the risk associated with handling sensitive data.
 
-Tailored Recommendations: Receive personalized recommendations for the top 5 medicines, prescription details, and even workout routines based on the predicted disease.
+Steps to run-
+1.pip install -r requirements.txt
+2.Open main.py
+3.streamlit run main.py
 
-Flask App Integration: The entire system is powered by a Flask web application, making it easily accessible to users. Experience the convenience of accessing healthcare recommendations from anywhere.
-
-Privacy and Security: We prioritize user privacy and data security. Your health information is handled with the utmost confidentiality, adhering to the highest industry standards.
-
-Continuous Improvement: Our system is designed for continuous improvement. As we gather more data, the machine learning models evolve, providing increasingly accurate and relevant recommendations.
-
-Take charge of your health with our Personalized Medical Recommendation System. Your well-being is our priority, and we're dedicated to providing you with the tools and insights you need for a healthier, happier life.
