@@ -38,6 +38,8 @@ def helper(dis):
 
     return desc, pre, med, die, wrkout
 
+
+
 def get_predicted_value(patient_symptoms):
     input_vector = np.zeros(len(symptoms_dict))
     for item in patient_symptoms:
@@ -60,61 +62,40 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown("""
-<style>
-.tredie {
-    font-size:20px;
-    color: red;
-    font-weight: bold;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-st.markdown("""
-<div class="redie">
-    Your AI-powered health assistant
-</div>
-""", unsafe_allow_html=True)
 
 st.sidebar.markdown("<p style='font-size: 25px; font-weight: bold; color: red;'>Select Symptoms</p>", unsafe_allow_html=True)
-
-# st.markdown("""
-# <div class='title-section'>
-#     <h1>BookDoco - My Personal Doctor</h1>
-#     <p style='font-size: 20px' >Your AI-powered health assistant</p> 
-# </div>
-# """, unsafe_allow_html=True)
-
-st.markdown("---") # Horizontal line separator
-
-st.subheader("What BookDoco can do for you:")
-st.write("* **Symptom-based disease prediction**")
-st.write("* **Personalized doctor recommendations**")
-st.write("* **Reliable health information and tips**") 
-
-st.markdown("""
-<style>
-    .start-consultation-button {
-        background-color: #4CAF50; /* Green */
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    
-</style>
-""", unsafe_allow_html=True)
 
 user_symptoms = []
 for symptom in symptoms_dict.keys():
             # When a symptom checkbox is clicked, append it to the user_symptoms list
             if st.sidebar.checkbox(symptom):
                 user_symptoms.append(symptom)
-predict_button_clicked = st.sidebar.button("Start Consultation", key="predict_button", type="primary", help="Predict the disease based on selected symptoms")
 
+predict_button_clicked = st.sidebar.button("Predict", key="predict_button", help="Predict the disease based on selected symptoms")
+def calculate_top_doctor(preference, predicted_disease):
+            specialist_df_filtered = specialist_df[specialist_df['Disease'] == predicted_disease]
+            specialists = specialist_df_filtered['Specialist'].tolist()
+            specialist_doctors = doctor_df[doctor_df['Specialization'].isin(specialists)]
+            preference = st.selectbox("Select your preference:", options=["Distance", "Experience"])
+            def doctor_score(doctor_row, preference):
+                experience = doctor_row['ExperienceYears']
+                rating = doctor_row['Rating']
+                distance = doctor_row['Distance']  # Assuming distance from user's location
+
+# Default weights
+                w_exp = 0.3
+                w_rating = 0.3
+                w_distance = 0.3
+
+# Adjust weights based on user's preference
+                if preference == "Experience":
+                     w_exp = 0.4
+                elif preference == "Distance":
+                     w_distance = 0.4
+                elif preference == "Distance":
+                     w_rating = 0.4
+
+                return w_exp * experience + w_rating * rating - w_distance * distance
 if predict_button_clicked:
             # Clear the previous output
         st.sidebar.empty()
@@ -127,7 +108,7 @@ if predict_button_clicked:
 
             if 'predicted_disease' not in st.session_state:  # Check if key exists
                 st.session_state['predicted_disease'] = predicted_disease  # Store disease
-            
+
             dis_des, precautions, medications, rec_diet, workout = helper(st.session_state['predicted_disease'])
 
             st.subheader("Description:")
@@ -150,23 +131,41 @@ if predict_button_clicked:
             st.subheader("Recommended Workout:")
             for item in workout:
                 st.write("- " + item)
-            if st.button("Clear Results"):
-                 if 'predicted_disease' in st.session_state:
-                      del st.session_state['predicted_disease'] 
-        
+            initial_preference = "Distance"  
+            st.session_state['preference'] = initial_preference
+            top_doctor_info = calculate_top_doctor(initial_preference, predicted_disease) 
+            st.subheader("Top Recommended Doctor:")
             
-        
+                
+            
          
+if 'doctor_score' in globals(): 
+        top_doctor = specialist_doctors.apply(lambda row: doctor_score(row, preference), axis=1).idxmax()
+        top_doctor_info = specialist_doctors.loc[top_doctor]
+        st.subheader("Top Recommended Doctor:")
+        st.write(f"Name: {top_doctor_info['Doctor Name']}")
+        st.write(f"Speciality: {top_doctor_info['Specialization']}")
+        st.write(f"Experience: {top_doctor_info['ExperienceYears']} years")
+        st.write(f"Average Rating: {top_doctor_info['Rating']}") 
+            
+           
+else:
+        st.error("Please enter valid symptoms.")
 
+preference = st.selectbox("Select your preference:", options=["Distance", "Experience"], key="preference")
 
-    
+# Recalculate doctor if preference changes
+if st.session_state.get('preference') != preference:
+    st.session_state['preference'] = preference
+    top_doctor_info = calculate_top_doctor(preference, st.session_state['predicted_disease'])  # Pass disease
+
+    # Clear existing doctor info and redisplay (optional, adjust as needed)
+    st.empty()  
+    st.subheader("Top Recommended Doctor (Updated):")
+    st.write(...)  # Display updated doctor info 
+
 st.sidebar.markdown("**About this App**")
 st.sidebar.write("This app helps you predict potential diseases based on your input symptoms.")
 
 
-
-
-
-
-
-
+                    
